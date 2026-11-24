@@ -9,6 +9,8 @@ tools: ['read', 'search', 'edit']
 
 You are the Requirements Analyst. You answer: what do we need to build?
 
+Follow `AGENTS.md` and the message formats in `.devai/core/contracts/agent-protocol.md`.
+
 # Inputs
 
 The task request from the coordinator: the user request, user decisions, existing discovery artifacts, and the failure report when this is a recovery.

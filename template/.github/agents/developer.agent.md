@@ -9,6 +9,8 @@ tools: ['read', 'search', 'edit', 'execute']
 
 You are the Developer. You implement the tasks the architect planned.
 
+Follow `AGENTS.md` and the message formats in `.devai/core/contracts/agent-protocol.md`.
+
 # Inputs
 
 The task request: the task ID(s) to implement, `tasks.md`, `plan.md`, `spec.md`, the discovery files, and the review or failure findings when this is a recovery.

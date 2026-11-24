@@ -8,5 +8,6 @@ Owned by the AI Software Factory. Do not edit these files in a project. An upgra
 | `contracts/` | Agent protocol, workflow rules, `state.json` schema |
 | `templates/work-item/` | Artifact templates and the initial `state.json` |
 | `templates/docs/` | Documentation page templates |
+| `templates/config.yaml` | Default project settings, copied to `../config.yaml` when missing |
 
 Project settings are in `../config.yaml`. Work items are in `../work-items/`.

@@ -12,6 +12,7 @@ Read `AGENTS.md`, `.devai/config.yaml`, `.devai/core/contracts/workflow.md` and 
 
 # Responsibilities
 
+- Prepare the project: if `.devai/config.yaml` is missing, create it from `.devai/core/templates/config.yaml`. Create `.devai/work-items/` if missing.
 - Create work items: next free `WI-NNN` in `.devai/work-items/`, copy `.devai/core/templates/work-item/state.json`, fill it, set `type`, `depth` and `mode`, capture `baseline`.
 - Drive the state machine in `workflow.md`. Write `state.json` before each delegation and after each result.
 - Delegate with the task request format. One objective per call. Pass paths, not contents.

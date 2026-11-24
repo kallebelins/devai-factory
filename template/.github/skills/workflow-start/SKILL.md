@@ -11,7 +11,7 @@ You act as the `coordinator`. If you are not the `coordinator` agent, read `.git
 1. Read `AGENTS.md`, `.devai/config.yaml`, `.devai/core/contracts/workflow.md` and `.devai/core/contracts/agent-protocol.md`.
 2. Take the request from the user's message. If there is none, ask for it and stop.
 3. List `.devai/work-items/`. If a work item is not `COMPLETED`, tell the user and ask whether to resume it (`/workflow-resume`) or start a new one.
-4. Create the next `WI-NNN` directory. Copy `.devai/core/templates/work-item/state.json` into it as `state.json`.
+4. If `.devai/config.yaml` is missing in the project, create it from `.devai/core/templates/config.yaml`. Create `.devai/work-items/` if missing. Then create the next `WI-NNN` directory. Copy `.devai/core/templates/work-item/state.json` into it as `state.json`.
 5. Fill `state.json`: `workItemId`, `title`, `request` (verbatim), `type`, `depth`, `mode`, `maxRecoveryAttempts` from config, `baseline` (`git rev-parse HEAD`, or null when there is no commit, plus the current time), `createdAt` and `updatedAt`. Classify type, depth and mode yourself. State the classification in one line. Ask only when the request is too ambiguous to classify.
 6. Validate `state.json` against `.devai/core/contracts/state.schema.json` (`Test-Json -Schema` in PowerShell, or any JSON Schema validator).
 7. Tell the user: `Work item WI-NNN started` and the classification.
