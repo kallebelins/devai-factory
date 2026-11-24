@@ -1,0 +1,212 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "software-factory/state.schema.json",
+  "title": "Work item state",
+  "description": "State of one work item. Written only by the coordinator.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "workItemId",
+    "title",
+    "type",
+    "depth",
+    "mode",
+    "status",
+    "iteration",
+    "maxRecoveryAttempts",
+    "specRevision",
+    "planRevision",
+    "currentTask",
+    "completedTasks",
+    "baseline",
+    "gates",
+    "waitingFor",
+    "recovery",
+    "problems",
+    "lastFailure",
+    "blockedReason",
+    "decisions",
+    "history",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "workItemId": { "type": "string", "pattern": "^WI-[0-9]{3,}$" },
+    "title": { "type": "string", "minLength": 1 },
+    "request": { "type": "string", "description": "Original user request, verbatim." },
+    "type": { "enum": ["feature", "bugfix", "maintenance", "refactor", "modernization"] },
+    "depth": { "enum": ["light", "standard", "deep"] },
+    "mode": { "enum": ["greenfield", "brownfield"] },
+    "status": {
+      "enum": [
+        "CREATED",
+        "SPECIFYING",
+        "PLANNING",
+        "WAITING_USER",
+        "IMPLEMENTING",
+        "REVIEWING",
+        "TESTING",
+        "DOCUMENTING",
+        "RECOVERING",
+        "BLOCKED",
+        "COMPLETED"
+      ]
+    },
+    "iteration": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Number of times the workflow entered RECOVERING."
+    },
+    "maxRecoveryAttempts": { "type": "integer", "minimum": 1 },
+    "specRevision": { "type": "integer", "minimum": 0 },
+    "planRevision": { "type": "integer", "minimum": 0 },
+    "currentTask": { "type": ["string", "null"], "pattern": "^T[0-9]{3,}$" },
+    "completedTasks": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "type": "string", "pattern": "^T[0-9]{3,}$" }
+    },
+    "baseline": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["vcsRef", "capturedAt"],
+      "properties": {
+        "vcsRef": {
+          "type": ["string", "null"],
+          "description": "Commit the evidence was checked against. Null when there is no VCS or no commit yet."
+        },
+        "capturedAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "gates": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["spec", "plan", "implementation", "review", "qa", "documentation"],
+      "properties": {
+        "spec": { "$ref": "#/definitions/gate" },
+        "plan": { "$ref": "#/definitions/gate" },
+        "implementation": { "$ref": "#/definitions/gate" },
+        "review": { "$ref": "#/definitions/gate" },
+        "qa": { "$ref": "#/definitions/gate" },
+        "documentation": { "$ref": "#/definitions/gate" }
+      }
+    },
+    "waitingFor": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "resumeStatus", "questions"],
+          "properties": {
+            "kind": { "enum": ["decision", "plan_approval"] },
+            "resumeStatus": { "enum": ["SPECIFYING", "PLANNING", "IMPLEMENTING"] },
+            "questions": {
+              "type": "array",
+              "items": { "type": "string", "pattern": "^Q-[0-9]{3,}$" }
+            }
+          }
+        }
+      ]
+    },
+    "recovery": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["problem", "route"],
+          "properties": {
+            "problem": { "type": "string", "pattern": "^P-[0-9]{3,}$" },
+            "route": {
+              "enum": [
+                "developer",
+                "architect",
+                "requirements",
+                "feature-discovery",
+                "codebase-discovery",
+                "failure-discovery",
+                "documenter"
+              ]
+            },
+            "returnTo": {
+              "enum": ["SPECIFYING", "PLANNING", "IMPLEMENTING", "REVIEWING", "TESTING", "DOCUMENTING"],
+              "description": "State to resume after the fix, following the invalidation chain."
+            }
+          }
+        }
+      ]
+    },
+    "problems": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "signature", "stage", "attempts", "status"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^P-[0-9]{3,}$" },
+          "signature": { "type": "string", "minLength": 1 },
+          "stage": { "enum": ["implementing", "reviewing", "testing", "documenting"] },
+          "attempts": { "type": "integer", "minimum": 0 },
+          "status": { "enum": ["open", "resolved", "blocked"] },
+          "notes": { "type": "string" }
+        }
+      }
+    },
+    "lastFailure": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["problem", "stage", "description", "at"],
+          "properties": {
+            "problem": { "type": "string", "pattern": "^P-[0-9]{3,}$" },
+            "stage": { "enum": ["implementing", "reviewing", "testing", "documenting"] },
+            "description": { "type": "string" },
+            "at": { "type": "string", "format": "date-time" }
+          }
+        }
+      ]
+    },
+    "blockedReason": { "type": ["string", "null"] },
+    "decisions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "question", "answer", "decidedAt"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^D-[0-9]{3,}$" },
+          "questionId": { "type": "string", "pattern": "^Q-[0-9]{3,}$" },
+          "question": { "type": "string" },
+          "answer": { "type": "string" },
+          "decidedAt": { "type": "string", "format": "date-time" }
+        }
+      }
+    },
+    "history": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["at", "event"],
+        "properties": {
+          "at": { "type": "string", "format": "date-time" },
+          "from": { "type": "string" },
+          "to": { "type": "string" },
+          "agent": { "type": "string" },
+          "event": { "type": "string", "minLength": 1 },
+          "result": { "type": "string" }
+        }
+      }
+    },
+    "createdAt": { "type": "string", "format": "date-time" },
+    "updatedAt": { "type": "string", "format": "date-time" }
+  },
+  "definitions": {
+    "gate": { "enum": ["PENDING", "PASSED", "FAILED", "STALE", "SKIPPED"] }
+  }
+}

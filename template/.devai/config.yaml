@@ -1,0 +1,43 @@
+# Project settings for the AI Software Factory. This file belongs to the project and is never overwritten by upgrades.
+# Interpreted by the coordinator and, later, by validation scripts. These are not native VS Code settings.
+
+factory:
+  name: AI Software Factory
+  config_version: 1
+
+paths:
+  work_items: .devai/work-items
+
+workflow:
+  execution: sequential          # discovery agents may run in parallel when the environment allows
+  max_recovery_attempts: 3       # per problem, not per work item
+  require_plan_approval: true
+  failure_discovery: on_demand
+
+discovery:
+  strategy: on_demand
+  require_evidence: true
+
+implementation:
+  follow_existing_architecture: true
+  incremental: true
+
+quality:
+  code_review: required
+  testing: required
+  regression_testing: true
+
+documentation:
+  enabled: true
+  provider: mkdocs
+  path: docs
+
+testing:
+  strategy: auto_detect
+  web:
+    provider: playwright
+
+delivery:
+  auto_commit: false
+  auto_push: false
+  auto_deploy: false
